@@ -24,12 +24,17 @@ public class PolicyResolver {
         } else {
             throw Web3Error.valueError(desc: "Could not be resolved with both from and sender are nil")
         }
-
-        tx.gasLimit = try await resolveGasEstimate(for: tx, with: policies.gasLimitPolicy)
-
+        
+        if tx.gasLimit == nil {
+            tx.gasLimit = try await resolveGasEstimate(for: tx, with: policies.gasLimitPolicy)
+        }
+        
         if case .eip1559 = tx.type {
-            tx.maxFeePerGas = await resolveGasBaseFee(for: policies.maxFeePerGasPolicy)
-            tx.maxPriorityFeePerGas = await resolveGasPriorityFee(for: policies.maxPriorityFeePerGasPolicy)
+            let baseFee = await resolveGasBaseFee(for: policies.maxFeePerGasPolicy)
+            let priorityFee = await resolveGasPriorityFee(for: policies.maxPriorityFeePerGasPolicy)
+            
+            tx.maxFeePerGas = baseFee + priorityFee
+            tx.maxPriorityFeePerGas = priorityFee
         } else {
             tx.gasPrice = await resolveGasPrice(for: policies.gasPricePolicy)
         }

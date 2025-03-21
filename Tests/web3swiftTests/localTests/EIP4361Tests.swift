@@ -53,7 +53,6 @@ Resources:
 https://example.com wants you to sign in with your Ethereum account:
 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2
 
-I accept the ExampleOrg Terms of Service: https://example.com/tos
 
 URI: https://example.com/login
 Version: 1
@@ -102,7 +101,6 @@ Resources:
 				scheme: "https",
 				domain: "example.com",
 				address: .init("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")!,
-				statement: "I accept the ExampleOrg Terms of Service: https://example.com/tos",
 				uri: URL(string: "https://example.com/login")!,
 				version: .v1,
 				chainId: 1,

@@ -21,11 +21,11 @@ public extension EIP4361 {
 				[scheme, domain].compactMap { $0 }.joined(separator: .schemeSepearator) + " wants you to sign in with your Ethereum account:",
 				address.address,
 				.empty,
-				statement ?? .empty,
+				statement,
 				.empty
 			]
 			
-			let fullMessage = header + fields.map(\.encoded)
+			let fullMessage = header.compactMap { $0 } + fields.map(\.encoded)
 			
 			return fullMessage.joined(separator: .newline)
 		}

@@ -53,8 +53,8 @@ extension Web3.BrowserFunctions {
 
     public func personalECRecover(_ personalMessage: Data, signature: Data) -> String? {
         if signature.count != 65 { return nil }
-        let rData = signature[0..<32].bytes
-        let sData = signature[32..<64].bytes
+        let rData = signature[0..<32]
+        let sData = signature[32..<64]
         var vData = signature[64]
         if vData >= 27 && vData <= 30 {
             vData -= 27
@@ -63,7 +63,7 @@ extension Web3.BrowserFunctions {
         } else if vData >= 35 && vData <= 38 {
             vData -= 35
         }
-        guard let signatureData = SECP256K1.marshalSignature(v: vData, r: rData, s: sData) else { return nil }
+        guard let signatureData = SECP256K1.marshalSignature(v: Data([vData]), r: rData, s: sData) else { return nil }
         guard let hash = Utilities.hashPersonalMessage(personalMessage) else { return nil }
         guard let publicKey = SECP256K1.recoverPublicKey(hash: hash, signature: signatureData) else { return nil }
         return Utilities.publicToAddressString(publicKey)

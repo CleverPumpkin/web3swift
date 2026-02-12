@@ -239,8 +239,8 @@ public struct Utilities {
     /// Takes a hash of some message. What message is hashed should be checked by user separately.
     public static func hashECRecover(hash: Data, signature: Data) -> EthereumAddress? {
         if signature.count != 65 { return nil }
-        let rData = signature[0..<32]
-        let sData = signature[32..<64]
+        let rData = Array(signature[0..<32])
+        let sData = Array(signature[32..<64])
         var vData = signature[64]
         if vData >= 27 && vData <= 30 {
             vData -= 27
@@ -249,15 +249,7 @@ public struct Utilities {
         } else if vData >= 35 && vData <= 38 {
             vData -= 35
         }
-        guard
-            let signatureData = SECP256K1.marshalSignature(
-                v: Data([vData]),
-                r: rData,
-                s: sData
-            )
-        else {
-            return nil
-        }
+        guard let signatureData = SECP256K1.marshalSignature(v: vData, r: rData, s: sData) else { return nil }
         guard let publicKey = SECP256K1.recoverPublicKey(hash: hash, signature: signatureData) else { return nil }
         return Utilities.publicToAddress(publicKey)
     }
@@ -283,10 +275,9 @@ public struct Utilities {
     /// Unmarshals a 65 byte recoverable EC signature into internal structure.
     static func unmarshalSignature(signatureData: Data) -> SECP256K1.UnmarshaledSignature? {
         if signatureData.count != 65 { return nil }
-        let bytes = signatureData
-        let r = Array(bytes[0..<32])
-        let s = Array(bytes[32..<64])
-        return SECP256K1.UnmarshaledSignature(v: bytes[64], r: Data(r), s: Data(s))
+        let r = Data(signatureData[0..<32])
+        let s = Data(signatureData[32..<64])
+        return SECP256K1.UnmarshaledSignature(v: signatureData[64], r: r, s: s)
     }
 
     /// Marshals the V, R and S signature parameters into a 65 byte recoverable EC signature.
